@@ -1,119 +1,74 @@
 package org.product;
 
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MockMvcBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.math.BigDecimal;
+import java.util.List;
 
-@RunWith(SpringRunner.class)
-@WebMvcTest(ProductController.class)
+import static org.assertj.core.api.Assertions.assertThat;
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringBootTest
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class ProductTest {
 
-    private MockMvc mockMvc;
+    @Autowired
+    public ProductController productController;
 
-    @Before
-    public void setUp() throws Exception {
-        mockMvc = MockMvcBuilders
-                .standaloneSetup(new ProductController())
-                .build();
-        mockMvc.perform(MockMvcRequestBuilders
-                        .post("/products")
-                        .param("name","water")
-                        .param("price", "3.0"))
-                .andExpect(status().isOk());
+    @Test
+    public void checkGetProducts() throws Exception {
+        List<Product> products = productController.products();
+        assertThat(products != null);
+        assertThat(products.size() == 0);
     }
 
     @Test
-    public void checkGetProduct() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders
-                        .get("/products/1"))
-                .andExpect(content().json("{'name': 'water', 'price': 3.0,'id': 1}"))
-                .andExpect(status().isOk());
+    public void checkInsertProducts() throws Exception {
+        productController.insertProduct("test", new BigDecimal("3.0"));
+        productController.insertProduct("test", new BigDecimal("3.0"));
+        productController.insertProduct("test", new BigDecimal("3.0"));
+        assertThat(productController.products().size() == 3);
+    }
+
+    @Test
+    public void checkGetExistingProduct() throws Exception {
+        productController.insertProduct("test", new BigDecimal("3.0"));
+        Product product = productController.product(1);
+        assertThat(product != null);
+        assertThat(product.getName().equals("test"));
+        assertThat(product.getPrice().equals(new BigDecimal("3.0")));
     }
 
     @Test
     public void checkGetNotExistingProduct() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders
-                        .get("/products/2"))
-                .andExpect(content().string(""))
-                .andExpect(status().isOk());
+        assertThat(productController.product(1) == null);
     }
 
     @Test
-    public void checkGetProducts() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders
-                        .get("/products"))
-                .andExpect(content().json("[{'name': 'water', 'price': 3.0,'id': 1}]"))
-                .andExpect(status().isOk());
+    public void checkUpdateProducts() throws Exception {
+        productController.insertProduct("test", new BigDecimal("3.0"));
+        productController.updateProduct(1, "new name", new BigDecimal("4.5"));
+        Product product = productController.product(1);
+        assertThat(product != null);
+        assertThat(product.getName().equals("new name"));
+        assertThat(product.getPrice().equals(new BigDecimal("4.5")));
     }
 
     @Test
-    public void checkGetAfterInsertProducts() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders
-                        .post("/products")
-                        .param("name","cola")
-                        .param("price", "6.0"))
-                .andExpect(status().isOk());
-        mockMvc.perform(MockMvcRequestBuilders
-                        .get("/products"))
-                .andExpect(content().json("[{'name': 'water', 'price': 3.0,'id': 1}, {'name': 'cola','price': 6.0,'id': 2}]"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    public void checkGetAfterDeleteProducts() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders
-                        .delete("/products/1"))
-                .andExpect(status().isOk());
-        mockMvc.perform(MockMvcRequestBuilders
-                        .get("/products"))
-                .andDo(print())
-                .andExpect(content().json("[]"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    public void checkGetAfterUpdateProducts() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders
-                        .put("/products/1")
-                        .param("name","water")
-                        .param("price", "3.5"))
-                .andExpect(status().isOk());
-        mockMvc.perform(get("/products/1"))
-                .andExpect(content().json("{'name': 'water', 'price': 3.5,'id': 1}"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    public void checkWrongParametersInsertProducts() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders
-                        .post("/products")
-                        .param("names","cola")
-                        .param("price", "6.0"))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    public void checkWrongParametersUpdateProducts() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders
-                        .put("/products/1")
-                        .param("name","cola")
-                        .param("prrice", "6.0"))
-                .andExpect(status().isBadRequest());
+    public void checkDeleteProducts() throws Exception {
+        productController.insertProduct("test", new BigDecimal("3.0"));
+        productController.insertProduct("test", new BigDecimal("3.0"));
+        List<Product> products = productController.products();
+        assertThat(productController.products().size() == 2);
+        productController.deleteProduct(1);
+        assertThat(productController.products().size() == 1);
+        productController.deleteProduct(2);
+        assertThat(productController.products().size() == 0);
     }
 }
 

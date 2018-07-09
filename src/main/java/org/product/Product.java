@@ -1,35 +1,26 @@
 package org.product;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.math.BigDecimal;
 
+
+@Entity
+@Data @NoArgsConstructor
 public class Product {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
     private String name;
     private BigDecimal price;
 
-    public Product(Integer id, String name, BigDecimal price) {
-        this.id = id;
+    public Product(String name, BigDecimal price) {
         this.name = name;
         this.price = price;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    @Override
-    public String toString() {
-        return id + "";
     }
 }

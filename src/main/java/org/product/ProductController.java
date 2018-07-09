@@ -1,5 +1,6 @@
 package org.product;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -7,7 +8,9 @@ import java.util.List;
 
 @RestController
 public class ProductController {
-    ProductManager productManager = new ProductManager();
+
+    @Autowired
+    private ProductManager productManager;
 
     @GetMapping(value = "/products")
     public List<Product> products() {
