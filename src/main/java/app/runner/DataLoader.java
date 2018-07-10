@@ -15,7 +15,8 @@ import java.math.BigDecimal;
 
 @Component
 @Profile("!test")
-public class DataLoader implements ApplicationRunner {
+// Lepiej zrobić loader per pakiet/funkcjonalność - wtedy unikamy upublicznienia wszystkiego.
+class DataLoader implements ApplicationRunner {
 
     @Autowired
     private UserRepository userRepository;

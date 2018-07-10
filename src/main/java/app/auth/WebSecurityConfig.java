@@ -1,6 +1,8 @@
 package app.auth;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -13,10 +15,14 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Configuration
 @EnableWebSecurity
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+@RequiredArgsConstructor //tworzy konstruktor patrząc na pola finalne, generalnie adnotacja @Autowired nie jest tak
+// naprawdę potrzebna w springu
+class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    private UserDetailsService userDetailsService;
+    // tworząc własny userdetailsservice - nadpisujesz springowy - warto go odpowiednio nazwać (nazwa w adnotacji
+    // @Service)
+    @Qualifier("myUserDetailsService")
+    private final UserDetailsService userDetailsService;
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
@@ -25,6 +31,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        //tu mozna by nad wcieciami popracowac
         http
                 .authorizeRequests()
                 .antMatchers(HttpMethod.GET, "/products/*").permitAll()

@@ -2,8 +2,12 @@ package app;
 
 import app.auth.User;
 import app.auth.UserRepository;
-import app.product.*;
-
+import app.product.Product;
+import app.product.ProductCategory;
+import app.product.ProductCategoryRepository;
+import app.product.ProductController;
+import app.product.ProductRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -19,8 +23,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -28,9 +30,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @ActiveProfiles("test")
+//jak spakietujesz test zgodnie z pakietami w mainie - to też unikniesz upublicznienia wszystkiego
+@Slf4j
 public class ApplicationTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(ApplicationTest.class);
+    //@Slf4j
+    //private static final Logger logger = LoggerFactory.getLogger(ApplicationTest.class);
 
     @Autowired
     private ProductController productController;
