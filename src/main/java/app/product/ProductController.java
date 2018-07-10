@@ -1,4 +1,4 @@
-package org.product;
+package app.product;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +11,10 @@ public class ProductController {
 
     @Autowired
     private ProductManager productManager;
+
+    public ProductController(ProductManager productManager) {
+        this.productManager = productManager;
+    }
 
     @GetMapping(value = "/products")
     public List<Product> products() {
