@@ -1,6 +1,7 @@
 buildscript {
     repositories {
-        mavenCentral() //warto dorzucić jest mavenLocal() wtedy też patrzy po lokalnym repo.
+        mavenCentral()
+        mavenLocal()
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:2.0.3.RELEASE")
@@ -31,6 +32,5 @@ dependencies {
     compile("com.h2database:h2")
     compile("org.springframework.boot:spring-boot-starter-security")
     testCompile('org.springframework.boot:spring-boot-starter-test')
-    testCompile('com.jayway.jsonpath:json-path')// czy ta biblioteka jest Ci potrzebna?
 }
 

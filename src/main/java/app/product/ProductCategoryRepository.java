@@ -7,5 +7,6 @@ import java.util.List;
 
 @Repository
 interface ProductCategoryRepository extends CrudRepository<ProductCategory, Integer> {
+
     List<ProductCategory> findAll();
 }

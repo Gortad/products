@@ -15,12 +15,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Configuration
 @EnableWebSecurity
-@RequiredArgsConstructor //tworzy konstruktor patrząc na pola finalne, generalnie adnotacja @Autowired nie jest tak
-// naprawdę potrzebna w springu
+@RequiredArgsConstructor
 class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    // tworząc własny userdetailsservice - nadpisujesz springowy - warto go odpowiednio nazwać (nazwa w adnotacji
-    // @Service)
     @Qualifier("myUserDetailsService")
     private final UserDetailsService userDetailsService;
 
@@ -31,7 +28,6 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        //tu mozna by nad wcieciami popracowac
         http
                 .authorizeRequests()
                 .antMatchers(HttpMethod.GET, "/products/*").permitAll()
